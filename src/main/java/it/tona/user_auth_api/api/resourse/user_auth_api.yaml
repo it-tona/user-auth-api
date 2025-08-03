@@ -1,0 +1,134 @@
+openapi: 3.0.1
+info:
+  title: User Auth API
+  description: API per registrazione, login e recupero dati utente autenticato con JWT
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+    description: Local server
+
+tags:
+  - name: Authentication
+    description: Endpoints per login e registrazione
+  - name: User
+    description: Endpoint protetto per utente autenticato
+
+paths:
+  /api/auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Registra un nuovo utente
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '200':
+          description: Utente registrato con successo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+
+  /api/auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login utente e restituzione JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login riuscito
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Credenziali non valide
+
+  /api/users/me:
+    get:
+      tags:
+        - User
+      summary: Recupera l'utente attualmente autenticato
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Dati dell'utente loggato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '401':
+          description: Non autorizzato
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    RegisterRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          example: mario@example.com
+        password:
+          type: string
+          example: strongPassword123
+        fullName:
+          type: string
+          example: Mario Rossi
+      required:
+        - email
+        - password
+        - fullName
+
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          example: mario@example.com
+        password:
+          type: string
+          example: strongPassword123
+      required:
+        - email
+        - password
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        email:
+          type: string
+          example: mario@example.com
+        fullName:
+          type: string
+          example: Mario Rossi
+        role:
+          type: string
+          example: USER
