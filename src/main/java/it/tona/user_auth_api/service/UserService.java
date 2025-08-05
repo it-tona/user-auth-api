@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import it.tona.user_auth_api.connector.entity.UserEntity;
+import it.tona.user_auth_api.connector.repository.UserRepository;
 import it.tona.user_auth_api.mapper.UserMapper;
 import it.tona.user_auth_api.model.User;
-import it.tona.user_auth_api.repository.UserRepository;
 
 
 @Service

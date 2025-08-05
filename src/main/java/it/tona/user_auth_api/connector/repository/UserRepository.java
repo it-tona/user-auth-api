@@ -1,4 +1,4 @@
-package it.tona.user_auth_api.repository;
+package it.tona.user_auth_api.connector.repository;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;

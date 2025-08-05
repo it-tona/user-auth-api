@@ -20,6 +20,13 @@ spring:
             path: /h2-console
 logging:
     level:
-        org.hibernate.SQL: DEBUG
-        org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+        #org.hibernate.SQL: DEBUG
+        #org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+        #root: INFO
+        it.tona.user_auth_api: INFO
+    file: 
+        path: logs/
+    logback:
+        rollingpolicy:
+            max-history: 7
 
