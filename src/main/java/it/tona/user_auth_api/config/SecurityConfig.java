@@ -26,6 +26,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
+            .cors(Customizer.withDefaults()) // Abilita CORS
             .csrf(csrf -> csrf.disable()) // Disabilita CSRF (per H2 + API stateless)
             .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin())) // <-- ABILITA FRAME
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
