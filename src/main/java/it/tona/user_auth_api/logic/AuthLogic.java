@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import it.tona.user_auth_api.config.BaseServiceAndLogic;
+import it.tona.user_auth_api.connector.entity.RefreshTokenEntity;
 import it.tona.user_auth_api.connector.entity.UserEntity;
 import it.tona.user_auth_api.mapper.UserMapper;
 import it.tona.user_auth_api.model.AuthResponse;
@@ -15,7 +16,9 @@ import it.tona.user_auth_api.model.LoginRequest;
 import it.tona.user_auth_api.model.RegisterRequest;
 import it.tona.user_auth_api.model.User;
 import it.tona.user_auth_api.model.enumeration.Role;
+import it.tona.user_auth_api.model.enumeration.UtilityEnum;
 import it.tona.user_auth_api.service.JwtService;
+import it.tona.user_auth_api.service.RefreshTokenService;
 import it.tona.user_auth_api.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,12 +34,17 @@ public class AuthLogic extends BaseServiceAndLogic {
     private UserService userService;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private RefreshTokenService refreshTokenService;
     
     public ResponseEntity<AuthResponse> execute(RegisterRequest registerRequest) {
         log.info("Registering user with email: {}", registerRequest.getEmail());
 
+        AuthResponse response = new AuthResponse();
+
         if (userService.findByEmail(registerRequest.getEmail()).isPresent()) {
-            return ResponseEntity.badRequest().body(new AuthResponse("Email already registered"));
+            response.setErrorMessage(UtilityEnum.EMAIL_ALREADY_REGISTERED.getValue());
+            return ResponseEntity.badRequest().body(response);
         }
 
         User user = new User();
@@ -47,25 +55,47 @@ public class AuthLogic extends BaseServiceAndLogic {
 
         userService.save(user);
 
-        return ResponseEntity.ok(new AuthResponse(jwtService.generateToken(user.getEmail())));
+        response.setToken(jwtService.generateToken(user.getEmail()));
+
+        return ResponseEntity.ok(response);
         
     }
 
     public ResponseEntity<AuthResponse> execute(LoginRequest loginRequest) {
         log.info("Logging in user with email: {}", loginRequest.getEmail());
+
+        AuthResponse response = new AuthResponse();
         
         Optional<UserEntity> userEntity = userService.findByEmail(loginRequest.getEmail());
         if (userEntity.isEmpty()) {
-            return ResponseEntity.status(401).body(new AuthResponse("Invalid email or password"));
+            response.setErrorMessage(UtilityEnum.INVALID_CREDENTIALS.getValue());
+            return ResponseEntity.status(401).body(response);
         }
         
         User user = UserMapper.toModel(userEntity.get());
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            return ResponseEntity.status(401).body(new AuthResponse("Invalid email or password"));
+            response.setErrorMessage(UtilityEnum.INVALID_CREDENTIALS.getValue());
+            return ResponseEntity.status(401).body(response);
         }
 
-        return ResponseEntity.ok(new AuthResponse(jwtService.generateToken(user.getEmail())));
+        response.setToken(jwtService.generateToken(user.getEmail()));
+        
+        return ResponseEntity.ok(response);
         
     }
 
+
+    public ResponseEntity<AuthResponse> execute(String requestToken) {
+        return refreshTokenService.findByToken(requestToken)
+            .map(refreshTokenService::verifyExpiration)
+            .map(RefreshTokenEntity::getUser)
+            .map(user -> {
+                String newAccessToken = jwtService.generateToken(user.getEmail());
+                String newRefreshToken = refreshTokenService.createRefreshToken(user.getId()).getToken();
+
+                return ResponseEntity.ok(new AuthResponse(newAccessToken, newRefreshToken));
+            })
+            .orElseThrow(() -> new RuntimeException("Refresh token non valido"));
+        
+    }
 }
