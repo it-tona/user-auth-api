@@ -13,14 +13,17 @@ public class CorsConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**")                    // tutte le rotte
-                        .allowedOrigins("http://localhost:5173")  // frontend origin
-                        .allowedOrigins("https://user-auth-fe-production.up.railway.app") // production frontend origin
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // metodi permessi
-                        .allowCredentials(true)
-                        .allowedHeaders("");
+                registry.addMapping("/**")
+                    .allowedOrigins(
+                        "http://localhost:5173",
+                        "https://user-auth-fe-production.up.railway.app"
+                    )
+                    .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                    .allowedHeaders("*")
+                    .allowCredentials(true);
             }
         };
     }
+
 
 }
