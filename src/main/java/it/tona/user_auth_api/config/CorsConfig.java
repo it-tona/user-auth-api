@@ -15,9 +15,12 @@ public class CorsConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")                    // tutte le rotte
                         .allowedOrigins("http://localhost:5173")  // frontend origin
+                        .allowedOrigins("https://user-auth-fe-production.up.railway.app") // production frontend origin
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // metodi permessi
-                        .allowCredentials(true);
+                        .allowCredentials(true)
+                        .allowedHeaders("");
             }
         };
     }
+
 }
