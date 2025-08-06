@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import it.tona.user_auth_api.config.BaseOut;
 import it.tona.user_auth_api.config.BaseServiceAndLogic;
 import it.tona.user_auth_api.connector.entity.RefreshTokenEntity;
 import it.tona.user_auth_api.connector.entity.UserEntity;
@@ -37,14 +38,15 @@ public class AuthLogic extends BaseServiceAndLogic {
     @Autowired
     private RefreshTokenService refreshTokenService;
     
-    public ResponseEntity<AuthResponse> execute(RegisterRequest registerRequest) {
+    public ResponseEntity<? extends BaseOut> execute(RegisterRequest registerRequest) {
         log.info("Registering user with email: {}", registerRequest.getEmail());
 
         AuthResponse response = new AuthResponse();
 
         if (userService.findByEmail(registerRequest.getEmail()).isPresent()) {
-            response.setErrorMessage(UtilityEnum.EMAIL_ALREADY_REGISTERED.getValue());
-            return ResponseEntity.badRequest().body(response);
+            BaseOut baseOut = new BaseOut();
+            baseOut.setErrorMessage(UtilityEnum.EMAIL_ALREADY_REGISTERED.getValue());
+            return ResponseEntity.badRequest().body(baseOut);
         }
 
         User user = new User();
@@ -61,21 +63,23 @@ public class AuthLogic extends BaseServiceAndLogic {
         
     }
 
-    public ResponseEntity<AuthResponse> execute(LoginRequest loginRequest) {
+    public ResponseEntity<? extends BaseOut> execute(LoginRequest loginRequest) {
         log.info("Logging in user with email: {}", loginRequest.getEmail());
 
         AuthResponse response = new AuthResponse();
         
         Optional<UserEntity> userEntity = userService.findByEmail(loginRequest.getEmail());
         if (userEntity.isEmpty()) {
-            response.setErrorMessage(UtilityEnum.INVALID_CREDENTIALS.getValue());
-            return ResponseEntity.status(401).body(response);
+            BaseOut baseOut = new BaseOut();
+            baseOut.setErrorMessage(UtilityEnum.INVALID_CREDENTIALS.getValue());
+            return ResponseEntity.status(401).body(baseOut);
         }
         
         User user = UserMapper.toModel(userEntity.get());
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            response.setErrorMessage(UtilityEnum.INVALID_CREDENTIALS.getValue());
-            return ResponseEntity.status(401).body(response);
+            BaseOut baseOut = new BaseOut();
+            baseOut.setErrorMessage(UtilityEnum.INVALID_CREDENTIALS.getValue());
+            return ResponseEntity.status(401).body(baseOut);
         }
 
         response.setToken(jwtService.generateToken(user.getEmail()));
@@ -85,7 +89,7 @@ public class AuthLogic extends BaseServiceAndLogic {
     }
 
 
-    public ResponseEntity<AuthResponse> execute(String requestToken) {
+    public ResponseEntity<? extends BaseOut> execute(String requestToken) {
         return refreshTokenService.findByToken(requestToken)
             .map(refreshTokenService::verifyExpiration)
             .map(RefreshTokenEntity::getUser)
