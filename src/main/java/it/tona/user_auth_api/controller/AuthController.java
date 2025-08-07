@@ -39,7 +39,7 @@ public class AuthController implements UserAuthApi {
         return authLogic.execute(requestToken);
     }
 
-    public ResponseEntity<? extends BaseOut> forgotPassword(LoginRequest body) {
+    public ResponseEntity<? extends BaseOut> resetPassword(LoginRequest body) {
         String email = body.getEmail();
         String token = passwordResetService.createResetToken(email);
         emailService.sendResetPasswordEmail(email, token);
@@ -49,7 +49,7 @@ public class AuthController implements UserAuthApi {
         return ResponseEntity.ok(response);
     }
 
-    public ResponseEntity<BaseOut> resetPassword(LoginRequest body) {
+    public ResponseEntity<BaseOut> forgotPassword(LoginRequest body) {
         String token = body.getEmail(); // Assuming token is passed in the email field
         String newPassword = body.getPassword(); // Assuming new password is passed in the password field
 
