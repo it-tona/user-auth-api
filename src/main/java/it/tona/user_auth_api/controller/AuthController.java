@@ -2,6 +2,7 @@ package it.tona.user_auth_api.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import it.tona.user_auth_api.api.UserAuthApi;
@@ -10,12 +11,17 @@ import it.tona.user_auth_api.logic.AuthLogic;
 import it.tona.user_auth_api.model.LoginRequest;
 import it.tona.user_auth_api.model.RefreshTokenRequest;
 import it.tona.user_auth_api.model.RegisterRequest;
+import it.tona.user_auth_api.service.EmailService;
+import it.tona.user_auth_api.service.PasswordResetService;
 
 @RestController
 public class AuthController implements UserAuthApi {
 
     @Autowired
     private AuthLogic authLogic;
+
+    @Autowired private PasswordResetService passwordResetService;
+    @Autowired private EmailService emailService;
     
     public ResponseEntity<? extends BaseOut> registerUser(RegisterRequest registerRequest){
         return authLogic.execute(registerRequest);
@@ -33,10 +39,23 @@ public class AuthController implements UserAuthApi {
         return authLogic.execute(requestToken);
     }
 
+    public ResponseEntity<? extends BaseOut> forgotPassword(LoginRequest body) {
+        String email = body.getEmail();
+        String token = passwordResetService.createResetToken(email);
+        emailService.sendResetPasswordEmail(email, token);
 
-    @Override
-    public ResponseEntity<? extends BaseOut> forgotPassword(LoginRequest loginRequest) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'forgotPassword'");
+        BaseOut response = new BaseOut();
+        response.setSuccessMessage("Email di reset inviata");
+        return ResponseEntity.ok(response);
+    }
+
+    public ResponseEntity<BaseOut> resetPassword(LoginRequest body) {
+        String token = body.getEmail(); // Assuming token is passed in the email field
+        String newPassword = body.getPassword(); // Assuming new password is passed in the password field
+
+        passwordResetService.resetPassword(token, newPassword);
+        BaseOut response = new BaseOut();
+        response.setSuccessMessage("Password aggiornata con successo");
+        return ResponseEntity.ok(response);
     }
 }
