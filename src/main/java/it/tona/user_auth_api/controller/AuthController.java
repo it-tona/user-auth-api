@@ -51,7 +51,7 @@ public class AuthController implements UserAuthApi {
     }
 
     public ResponseEntity<BaseOut> resetPassword(ResetRequest body, String token) {
-        String newPassword = body.getPassword() == body.getConfirmPassword() ? body.getPassword() : null; 
+        String newPassword = body.getPassword().equals(body.getConfirmPassword()) ? body.getPassword() : null; 
 
         passwordResetService.resetPassword(token, newPassword);
         BaseOut response = new BaseOut();
