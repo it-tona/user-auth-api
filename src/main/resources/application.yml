@@ -14,7 +14,7 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 logging:
   level:
-    it.tona.user_auth_api: INFO
+    it.tona.user_auth_api]: INFO
   file: 
     path: logs/
   logback:
@@ -22,3 +22,11 @@ logging:
       max-history: 7
 
 app.jwt.refreshExpirationSec: 3600
+
+spring.mail.host=: live.smtp.mailtrap.io
+spring.mail.port: 587
+spring.mail.username: smtp@mailtrap.io
+spring.mail.password: fefccff425dda9dbb7a77c8e063a8cec
+spring.mail.protocol: smtp
+spring.mail.properties.mail.smtp.auth: true
+spring.mail.properties.mail.smtp.starttls.enable: true

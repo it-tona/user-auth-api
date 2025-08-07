@@ -6,4 +6,5 @@ import lombok.Data;
 public class BaseOut {
     String errorCode;
     String errorMessage;
+    String successMessage;
 }

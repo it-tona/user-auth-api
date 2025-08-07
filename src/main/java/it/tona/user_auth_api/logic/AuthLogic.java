@@ -72,14 +72,14 @@ public class AuthLogic extends BaseServiceAndLogic {
         if (userEntity.isEmpty()) {
             BaseOut baseOut = new BaseOut();
             baseOut.setErrorMessage(UtilityEnum.INVALID_CREDENTIALS.getValue());
-            return ResponseEntity.status(401).body(baseOut);
+            return ResponseEntity.badRequest().body(baseOut);
         }
         
         User user = UserMapper.toModel(userEntity.get());
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             BaseOut baseOut = new BaseOut();
             baseOut.setErrorMessage(UtilityEnum.INVALID_CREDENTIALS.getValue());
-            return ResponseEntity.status(401).body(baseOut);
+            return ResponseEntity.badRequest().body(baseOut);
         }
 
         response.setToken(jwtService.generateToken(user.getEmail()));
