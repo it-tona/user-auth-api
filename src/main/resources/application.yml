@@ -30,3 +30,5 @@ spring.mail.password: fefccff425dda9dbb7a77c8e063a8cec
 spring.mail.protocol: smtp
 spring.mail.properties.mail.smtp.auth: true
 spring.mail.properties.mail.smtp.starttls.enable: true
+spring.mail.properties.from: no-reply@example.com
+
