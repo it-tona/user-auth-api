@@ -1,10 +1,13 @@
 package it.tona.user_auth_api.api;
 
 import it.tona.user_auth_api.model.RegisterRequest;
+import it.tona.user_auth_api.model.ResetRequest;
 import it.tona.user_auth_api.model.AuthResponse;
+import it.tona.user_auth_api.model.ForgotRequest;
 import it.tona.user_auth_api.model.LoginRequest;
 import it.tona.user_auth_api.model.RefreshTokenRequest;
 import it.tona.user_auth_api.config.BaseOut;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -67,27 +70,9 @@ public interface UserAuthApi {
     public ResponseEntity<? extends BaseOut> refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest);
 
 
-    @Operation(summary = "Forgot password")
-    @ApiResponses(value = {
-    @ApiResponse(responseCode = "200", description = "Password reset link sent",
-        content = @Content(
-            mediaType = "application/json",
-            schema = @Schema(oneOf = { AuthResponse.class })
-        )),
-    @ApiResponse(responseCode = "400", description = "Invalid email",
-        content = @Content(
-            mediaType = "application/json",
-            schema = @Schema(implementation = BaseOut.class)
-        ))
-    })
-    @PostMapping("/forgot-password")
-    public ResponseEntity<? extends BaseOut> forgotPassword(@RequestBody LoginRequest loginRequest,
-                                                            @RequestParam String token);
-
-
     @Operation(summary = "Reset password")
     @ApiResponses(value = {
-    @ApiResponse(responseCode = "200", description = "Password reset successfully",
+    @ApiResponse(responseCode = "200", description = "Password reset",
         content = @Content(
             mediaType = "application/json",
             schema = @Schema(oneOf = { AuthResponse.class })
@@ -99,5 +84,23 @@ public interface UserAuthApi {
         ))
     })
     @PostMapping("/reset-password")
-    public ResponseEntity<? extends BaseOut> resetPassword(@RequestBody LoginRequest loginRequest);
+    public ResponseEntity<? extends BaseOut> resetPassword(@RequestBody ResetRequest loginRequest,
+                                                            @RequestParam String token);
+
+
+    @Operation(summary = "Forgot password: insert mail to receive reset instructions")
+    @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Mail sent with reset instructions",
+        content = @Content(
+            mediaType = "application/json",
+            schema = @Schema(oneOf = { AuthResponse.class })
+        )),
+    @ApiResponse(responseCode = "400", description = "Invalid email",
+        content = @Content(
+            mediaType = "application/json",
+            schema = @Schema(implementation = BaseOut.class)
+        ))
+    })
+    @PostMapping("/forgot-password")
+    public ResponseEntity<? extends BaseOut> forgotPassword(@RequestBody ForgotRequest loginRequest);
 }
