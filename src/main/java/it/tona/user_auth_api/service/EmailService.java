@@ -19,7 +19,7 @@ public class EmailService {
                 "Se non sei stato tu, ignora questo messaggio.";
 
         SimpleMailMessage email = new SimpleMailMessage();
-        email.setFrom("no-reply@example.com");
+        email.setFrom("hello@demomailtrap.co");
         email.setTo(to);
         email.setSubject(subject);
         email.setText(message);
