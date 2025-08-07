@@ -81,7 +81,8 @@ public interface UserAuthApi {
         ))
     })
     @PostMapping("/forgot-password")
-    public ResponseEntity<? extends BaseOut> forgotPassword(@RequestBody LoginRequest loginRequest);
+    public ResponseEntity<? extends BaseOut> forgotPassword(@RequestBody LoginRequest loginRequest,
+                                                            @RequestParam String token);
 
 
     @Operation(summary = "Reset password")

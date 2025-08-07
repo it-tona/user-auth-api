@@ -49,8 +49,7 @@ public class AuthController implements UserAuthApi {
         return ResponseEntity.ok(response);
     }
 
-    public ResponseEntity<BaseOut> forgotPassword(LoginRequest body) {
-        String token = body.getEmail(); // Assuming token is passed in the email field
+    public ResponseEntity<BaseOut> forgotPassword(LoginRequest body, String token) {
         String newPassword = body.getPassword(); // Assuming new password is passed in the password field
 
         passwordResetService.resetPassword(token, newPassword);
