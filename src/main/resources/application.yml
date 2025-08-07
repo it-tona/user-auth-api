@@ -30,5 +30,4 @@ spring.mail.password: ${MAILTRAP_PASSWORD}
 spring.mail.protocol: smtp
 spring.mail.properties.mail.smtp.auth: true
 spring.mail.properties.mail.smtp.starttls.enable: true
-spring.mail.properties.from: no-reply@example.com
 
