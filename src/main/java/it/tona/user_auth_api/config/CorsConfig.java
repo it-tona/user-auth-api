@@ -14,22 +14,7 @@ import org.springframework.web.cors.CorsConfiguration;
 @Configuration
 public class CorsConfig {
 
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**")
-                    .allowedOrigins(
-                        "http://localhost:5173",
-                        "https://user-auth-fe-production.up.railway.app"
-                    )
-                    .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                    .allowedHeaders("*")
-                    .allowCredentials(true);
-            }
-        };
-    }
+
 
     @Bean
     public FilterRegistrationBean<CorsFilter> corsFilter() {
